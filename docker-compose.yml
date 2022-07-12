@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  auth-service:
+    container_name: auth-service
+    build: ./auth-service
+    ports:
+      - "8001:8008"
+    depends_on:
+      - auth-redis-service
+      - auth-mongo-service
+    environment:
+      - PORT=8008
+      - REDIS_HOST=auth-redis-service
+      - REDIS_PORT=6001
+      - MONGODB_URL=mongodb://auth-mongo-service:27001/micro-auth
+
+  auth-redis-service: 
+    container_name: auth-redis-service
+    image: redis
+    ports:
+      - "6001:6379"
+
+  auth-mongo-service: 
+    container_name: auth-mongo-service
+    image: mongo
+    ports:
+      - "27001:27017"
