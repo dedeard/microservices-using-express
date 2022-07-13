@@ -12,6 +12,18 @@ services:
     ports:
       - "27017:27017"
 
+  api-getaway: 
+    container_name: nginx
+    image: nginx
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - post-service
+      - comment-service
+    volumes:
+      - ./api-getaway/nginx.conf:/etc/nginx/nginx.conf:ro
+
   auth-service:
     container_name: auth-service
     build: ./auth-service
