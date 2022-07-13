@@ -8,7 +8,7 @@ const redisCache = cacheManager.caching({
   host: config.redis.host,
   port: config.redis.port,
   auth_pass: config.redis.pass,
-  ttl: 1, // 1 second
+  ttl: 100, // 1 second
 })
 
 const redisClient = redisCache.store.getClient()

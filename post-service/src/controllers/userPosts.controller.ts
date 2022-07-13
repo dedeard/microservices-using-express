@@ -12,7 +12,7 @@ import updatePostsOnAlgolia from '@/queue/UpdatePostsOnAlgolia'
 export const getPosts = ca(async (req, res) => {
   const key = `users:${req.auth.uid}:posts`
   const posts = await redisCache.wrap(key, async () => {
-    return await Post.find({ user: req.auth.uid })
+    return await Post.find({ author: req.auth.uid })
   })
   res.json(posts)
 })
@@ -20,7 +20,7 @@ export const getPosts = ca(async (req, res) => {
 export const getPost = ca(async (req, res) => {
   const key = `users:${req.auth.uid}:post:${req.params.id}`
   const post = await redisCache.wrap(key, async () => {
-    return await Post.find({ user: req.auth.uid, _id: req.params.id })
+    return await Post.find({ author: req.auth.uid, _id: req.params.id })
   })
   if (!post) throw new ApiError(404, 'Post not found')
   res.json(post)
@@ -38,7 +38,7 @@ export const createPost = ca(async (req, res) => {
   } catch (e) {
     throw new ApiError(422, 'Failed to create post', e)
   }
-  const post = await Post.create({ title, description, user: req.auth.uid })
+  const post = await Post.create({ title, description, author: req.auth.uid })
   await redisCache.del(`users:${req.auth.uid}:posts`)
   res.json(post)
 })
@@ -46,7 +46,7 @@ export const createPost = ca(async (req, res) => {
 export const updatePost = ca(async (req, res) => {
   const id = req.params.id
   if (!Types.ObjectId.isValid(id)) throw new ApiError(404, 'Post not found')
-  const post = await Post.findOne({ _id: id, user: req.auth.uid })
+  const post = await Post.findOne({ _id: id, author: req.auth.uid })
   if (!post) throw new ApiError(404, 'Post not found')
 
   let { title, description, body, tags, published } = req.body
@@ -106,7 +106,7 @@ export const updatePost = ca(async (req, res) => {
 export const deletePost = ca(async (req, res) => {
   const id = req.params.id
   if (!Types.ObjectId.isValid(id)) throw new ApiError(404, 'Post not found')
-  const post = await Post.findOne({ _id: id, user: req.auth.uid })
+  const post = await Post.findOne({ _id: id, author: req.auth.uid })
   if (!post) throw new ApiError(404, 'Post not found')
 
   await post.deleteHero()

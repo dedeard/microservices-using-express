@@ -39,6 +39,8 @@ const config = {
     apiKey: String(process.env.ALGOLIA_API_KEY),
     indexName: String(process.env.ALGOLIA_INDEX_NAME || 'micro-posts'),
   },
+
+  authServiceBaseUrl: String(process.env.AUTH_SERVICE_BASE_URL || 'http://localhost:8081'),
 }
 
 export default config

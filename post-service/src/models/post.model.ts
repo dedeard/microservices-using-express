@@ -7,7 +7,7 @@ import sharp from 'sharp'
 import slugify from 'slugify'
 
 export interface IPost {
-  user: Schema.Types.ObjectId
+  author: string
   title: string
   slug: string
   heroImage?: string
@@ -15,7 +15,7 @@ export interface IPost {
   body: string
   tags: string[]
   published: boolean
-  likes: Schema.Types.ObjectId[]
+  liked: string[]
   createdAt: Date
   updatedAt: Date
 }
@@ -23,6 +23,8 @@ export interface IPost {
 export interface IPostDocument extends IPost, Document {
   generateHero: (imgBuff: Buffer) => Promise<string>
   deleteHero: () => Promise<void>
+  like: (userId: string) => Promise<void>
+  unlike: (userId: string) => Promise<void>
 }
 
 export interface IPostModel extends PaginateModel<IPostDocument> {}
@@ -30,7 +32,7 @@ export interface IPostModel extends PaginateModel<IPostDocument> {}
 // Schema
 export const PostSchema: Schema<IPostDocument> = new Schema(
   {
-    user: { type: Schema.Types.ObjectId, required: true, immutable: true },
+    author: { type: String, required: true, immutable: true },
     title: { type: String, required: true },
     slug: { type: String, unique: true },
     heroImage: { type: String },
@@ -38,7 +40,7 @@ export const PostSchema: Schema<IPostDocument> = new Schema(
     body: { type: String, default: '' },
     tags: [{ type: String, default: [] }],
     published: { type: Boolean, default: false },
-    likes: [{ type: Schema.Types.ObjectId, default: [] }],
+    liked: { type: [String], default: [] },
   },
   {
     timestamps: true,
@@ -90,6 +92,20 @@ PostSchema.methods.generateHero = async function (imgBuff: Buffer): Promise<stri
 PostSchema.methods.deleteHero = async function (): Promise<void> {
   await storageService.remove(storageService.normalizeUrl(this.heroImage))
   this.heroImage = undefined
+  await this.save()
+}
+
+// Like
+PostSchema.methods.like = async function (userId: string): Promise<void> {
+  const userIds = [...new Set(this.liked.concat(userId))]
+  this.liked = userIds
+  await this.save()
+}
+
+// Unlike
+PostSchema.methods.unlike = async function (userId: string): Promise<void> {
+  const userIds = this.liked.filter((id: string) => id !== userId)
+  this.liked = userIds
   await this.save()
 }
 

@@ -36,11 +36,13 @@ services:
     depends_on:
       - redis-service
       - mongo-service
+      - auth-service
     environment:
       - PORT=8082
       - REDIS_HOST=redis-service
       - REDIS_PORT=6379
       - MONGODB_URL=mongodb://mongo-service:27017/micro-posts
+      - AUTH_SERVICE_BASE_URL=http://auth-service:8081
 
   comment-service:
     container_name: comment-service

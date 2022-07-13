@@ -16,6 +16,7 @@
   "dependencies": {
     "@google-cloud/storage": "^5.19.0",
     "algoliasearch": "^4.13.1",
+    "axios": "^0.27.2",
     "bee-queue": "^1.4.0",
     "cache-manager": "^4.1.0",
     "cache-manager-redis-store": "^2.0.0",
