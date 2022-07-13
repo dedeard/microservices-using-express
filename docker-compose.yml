@@ -41,3 +41,18 @@ services:
       - REDIS_HOST=redis-service
       - REDIS_PORT=6379
       - MONGODB_URL=mongodb://mongo-service:27017/micro-posts
+
+  comment-service:
+    container_name: comment-service
+    build: ./comment-service
+    restart: always
+    ports:
+      - "8083:4000"
+    depends_on:
+      - redis-service
+      - mongo-service
+    environment:
+      - PORT=4000
+      - REDIS_HOST=redis-service
+      - REDIS_PORT=6379
+      - MONGODB_URL=mongodb://mongo-service:27017/micro-comments
