@@ -83,8 +83,8 @@ export const unlikePost = ca(async (req, res) => {
 })
 
 export const getLikedPosts = ca(async (req, res) => {
-  const posts = await redisCache.wrap(`likedPosts:${req.auth.uid}`, async () => {
-    const data = await Post.find({ published: true, liked: { $in: [req.auth.uid] } })
+  const posts = await redisCache.wrap(`likedPosts:${req.params.userId}`, async () => {
+    const data = await Post.find({ published: true, liked: { $in: [req.params.userId] } })
     const userIds = [...new Set(data.map((doc) => doc.author))]
     const users = (await axios.post(`${config.authServiceBaseUrl}/users`, { ids: userIds })).data
     // @ts-ignore
