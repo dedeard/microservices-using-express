@@ -20,7 +20,7 @@ function transformPostToAlgoliaObject(post: IPostDocument) {
   const data = post.toJSON()
   return {
     objectID: data.id,
-    userId: data.user,
+    userId: data.author,
     title: data.title,
     slug: data.slug,
     description: data.description,
