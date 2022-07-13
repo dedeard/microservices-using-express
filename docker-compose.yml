@@ -26,3 +26,18 @@ services:
       - REDIS_HOST=redis-service
       - REDIS_PORT=6379
       - MONGODB_URL=mongodb://mongo-service:27017/micro-auth
+
+  post-service:
+    container_name: post-service
+    build: ./post-service
+    restart: always
+    ports:
+      - "8002:8008"
+    depends_on:
+      - redis-service
+      - mongo-service
+    environment:
+      - PORT=8008
+      - REDIS_HOST=redis-service
+      - REDIS_PORT=6379
+      - MONGODB_URL=mongodb://mongo-service:27017/micro-posts
