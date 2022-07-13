@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@google-cloud/storage": "^5.19.0",
-    "algoliasearch": "^4.13.1",
     "axios": "^0.27.2",
     "bee-queue": "^1.4.0",
     "cache-manager": "^4.1.0",
@@ -33,7 +32,6 @@
     "mongoose": "^6.2.10",
     "mongoose-paginate-v2": "^1.7.0",
     "morgan": "^1.10.0",
-    "pusher": "^5.1.1-beta",
     "sharp": "^0.30.3",
     "slugify": "^1.6.5",
     "winston": "^3.7.2"

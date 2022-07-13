@@ -26,20 +26,6 @@ const config = {
     client_email: process.env.GC_CLIENT_EMAIL,
   },
 
-  pusher: {
-    appId: String(process.env.PUSHER_APP_ID),
-    key: String(process.env.PUSHER_APP_KEY),
-    secret: String(process.env.PUSHER_APP_SECRET),
-    cluster: String(process.env.PUSHER_APP_CLUSTER),
-    disableStats: true,
-  },
-
-  algolia: {
-    appId: String(process.env.ALGOLIA_APP_ID),
-    apiKey: String(process.env.ALGOLIA_API_KEY),
-    indexName: String(process.env.ALGOLIA_INDEX_NAME || 'micro-posts'),
-  },
-
   authServiceBaseUrl: String(process.env.AUTH_SERVICE_BASE_URL || 'http://localhost:8081'),
 }
 

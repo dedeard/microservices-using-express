@@ -4,10 +4,8 @@ import Post from '@/models/post.model'
 import ApiError from '@/shared/ApiError'
 import ca from '@/shared/catchAsync'
 import Joi from 'joi'
-import pusher from '@/config/pusher'
 import { fromBuffer } from 'file-type'
 import { UploadedFile } from 'express-fileupload'
-import updatePostsOnAlgolia from '@/queue/UpdatePostsOnAlgolia'
 
 export const getPosts = ca(async (req, res) => {
   const key = `users:${req.auth.uid}:posts`
@@ -85,20 +83,8 @@ export const updatePost = ca(async (req, res) => {
   post.body = body
   post.tags = tags
   post.published = published
-  await post.save()
 
-  await redisCache.del(`users:${req.auth.uid}:post:${id}`)
-  await redisCache.del(`users:${req.auth.uid}:posts`)
-
-  if (published) {
-    await pusher.trigger('posts', 'publish', { id: post._id, title, description, tags })
-    const job = updatePostsOnAlgolia.createJob({ action: 'publish', postId: post._id })
-    await job.save()
-  } else {
-    await pusher.trigger('posts', 'remove', { id: post._id })
-    const job = updatePostsOnAlgolia.createJob({ action: 'remove', postId: post._id })
-    await job.save()
-  }
+  await Promise.all([post.save(), redisCache.del(`users:${req.auth.uid}:posts`), redisCache.del(`users:${req.auth.uid}:post:${id}`)])
 
   res.json(post)
 })
@@ -110,14 +96,6 @@ export const deletePost = ca(async (req, res) => {
   if (!post) throw new ApiError(404, 'Post not found')
 
   await post.deleteHero()
-  await post.delete()
-  await redisCache.del(`users:${req.auth.uid}:post:${id}`)
-  await redisCache.del(`users:${req.auth.uid}:posts`)
-  if (post.published) {
-    await pusher.trigger('posts', 'remove', { id: post._id })
-    const job = updatePostsOnAlgolia.createJob({ action: 'remove', postId: post._id })
-    await job.save()
-  }
-
+  await Promise.all([post.save(), redisCache.del(`users:${req.auth.uid}:posts`), redisCache.del(`users:${req.auth.uid}:post:${id}`)])
   res.sendStatus(204)
 })
