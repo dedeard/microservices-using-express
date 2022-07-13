@@ -46,14 +46,6 @@ const config = {
       pass: String(process.env.SMTP_PASS),
     },
   },
-
-  pusher: {
-    appId: String(process.env.PUSHER_APP_ID),
-    key: String(process.env.PUSHER_APP_KEY),
-    secret: String(process.env.PUSHER_APP_SECRET),
-    cluster: String(process.env.PUSHER_APP_CLUSTER),
-    disableStats: true,
-  },
 }
 
 export default config

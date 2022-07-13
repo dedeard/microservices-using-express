@@ -6,7 +6,6 @@ import ApiError from '@/shared/ApiError'
 import ca from '@/shared/catchAsync'
 import { registeredEmailLookup, uniqueEmailLookup } from '@/shared/validationLookup'
 import sendResetPasswordEmail from '@/queue/resetPasswordEmailNotificationQueue'
-import pusher from '@/config/pusher'
 import moment from 'moment'
 
 export const register = ca(async (req, res) => {
@@ -20,10 +19,7 @@ export const register = ca(async (req, res) => {
   } catch (e) {
     throw new ApiError(422, 'Failed register.', e)
   }
-  const user = await User.create(req.body)
-
-  await pusher.trigger('user', 'create', user.toJSON())
-
+  await User.create(req.body)
   res.sendStatus(204)
 })
 

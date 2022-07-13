@@ -6,7 +6,6 @@ import { passwordMatchLookup } from '@/shared/validationLookup'
 import ApiError from '@/shared/ApiError'
 import User, { IUserDocument } from '@/models/user.model'
 import redisCache from '@/config/cache'
-import pusher from '@/config/pusher'
 
 async function getUser(id?: string): Promise<IUserDocument> {
   const user = await User.findById(id)
@@ -48,8 +47,6 @@ export const updateProfile = ca(async (req, res) => {
   if (req.body.newPassword) user.password = req.body.newPassword
   await user.save()
 
-  await pusher.trigger('user', 'update', user.toJSON())
-
   const key = `user:${req.auth?.uid}`
   await redisCache.del(key)
 
@@ -68,16 +65,8 @@ export const updateAvatar = ca(async (req, res) => {
   }
   await user.generateAvatar(data.data)
 
-  await pusher.trigger('user', 'update', user.toJSON())
-
   const key = `user:${req.auth?.uid}`
   await redisCache.del(key)
 
   res.json(user)
-})
-
-export const pusherLogin = ca(async (req, res) => {
-  const socketId = req.body.socket_id
-  const authResponse = pusher.authenticateUser(socketId, { id: req.auth?.uid as string })
-  res.json(authResponse)
 })
