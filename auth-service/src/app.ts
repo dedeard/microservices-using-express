@@ -9,7 +9,7 @@ import logger from '@/config/logger'
 import ErrorMiddleware from '@/middlewares/ErrorMiddleware'
 import { setupAuthRoute } from '@/routes/auth.route'
 import { setupAccountRoute } from '@/routes/account.route'
-import { setupUsersRoute } from './routes/users.route'
+import { setupUsersRoute } from '@/routes/users.route'
 
 class Application {
   app: express.Application

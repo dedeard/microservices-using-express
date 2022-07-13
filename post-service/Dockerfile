@@ -6,10 +6,10 @@ COPY package.json yarn.lock ./
 
 RUN yarn install
 
-COPY .. ./
+COPY . .
 
 RUN yarn build
 
-EXPOSE 8008
+EXPOSE ${PORT:-4000}
 
 CMD ["yarn", "start"]

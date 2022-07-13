@@ -7,7 +7,7 @@ const config = {
   isProd: process.env.NODE_ENV === 'production',
   isDev: process.env.NODE_ENV === 'development',
 
-  port: Number(process.env.PORT || 8008),
+  port: Number(process.env.PORT || 4000),
   mongodbUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/micro-posts',
   logging: process.env.LOGGING === 'true',
 
@@ -37,6 +37,7 @@ const config = {
   algolia: {
     appId: String(process.env.ALGOLIA_APP_ID),
     apiKey: String(process.env.ALGOLIA_API_KEY),
+    indexName: String(process.env.ALGOLIA_INDEX_NAME || 'micro-posts'),
   },
 }
 

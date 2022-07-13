@@ -22,9 +22,9 @@ resetPasswordEmailNotificationQueue.process(async (job) => {
       subject: 'Reset Password',
       html: `<h3>Hi, ${email}</h3> <p>You verification code is <strong>${code}</strong></p>`,
     })
-    logger.info('[Reset password email]' + JSON.stringify(info))
+    logger.info('[RESET PASSWORD EMAIL]' + JSON.stringify(info))
   } catch (e) {
-    logger.error('[Reset password email]' + JSON.stringify(e))
+    logger.error('[RESET PASSWORD EMAIL]' + JSON.stringify(e))
     throw e
   }
 })

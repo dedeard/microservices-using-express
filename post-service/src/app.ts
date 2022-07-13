@@ -7,6 +7,8 @@ import fileUpload from 'express-fileupload'
 import config from '@/config/config'
 import logger from '@/config/logger'
 import ErrorMiddleware from '@/middlewares/ErrorMiddleware'
+import { setupUserPostsRoute } from '@/routes/userPosts.route'
+import { setupPostsRoute } from '@/routes/posts.route'
 
 class Application {
   app: express.Application
@@ -36,7 +38,8 @@ class Application {
   }
 
   router() {
-    // Routes here
+    setupUserPostsRoute(this.app)
+    setupPostsRoute(this.app)
   }
 
   onError(error: any) {
