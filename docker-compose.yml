@@ -17,12 +17,12 @@ services:
     build: ./auth-service
     restart: always
     ports:
-      - "8081:4000"
+      - "8081:8081"
     depends_on:
       - redis-service
       - mongo-service
     environment:
-      - PORT=4000
+      - PORT=8081
       - REDIS_HOST=redis-service
       - REDIS_PORT=6379
       - MONGODB_URL=mongodb://mongo-service:27017/micro-auth
@@ -32,12 +32,12 @@ services:
     build: ./post-service
     restart: always
     ports:
-      - "8082:4000"
+      - "8082:8082"
     depends_on:
       - redis-service
       - mongo-service
     environment:
-      - PORT=4000
+      - PORT=8082
       - REDIS_HOST=redis-service
       - REDIS_PORT=6379
       - MONGODB_URL=mongodb://mongo-service:27017/micro-posts
@@ -47,12 +47,14 @@ services:
     build: ./comment-service
     restart: always
     ports:
-      - "8083:4000"
+      - "8083:8083"
     depends_on:
       - redis-service
       - mongo-service
+      - auth-service
     environment:
-      - PORT=4000
+      - PORT=8083
       - REDIS_HOST=redis-service
       - REDIS_PORT=6379
       - MONGODB_URL=mongodb://mongo-service:27017/micro-comments
+      - AUTH_SERVICE_BASE_URL=http://auth-service:8081

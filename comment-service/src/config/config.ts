@@ -18,6 +18,8 @@ const config = {
     port: Number(process.env.REDIS_PORT),
     pass: String(process.env.REDIS_PASS),
   },
+
+  authServiceBaseUrl: String(process.env.AUTH_SERVICE_BASE_URL || 'http://localhost:8081'),
 }
 
 export default config

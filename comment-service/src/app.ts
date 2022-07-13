@@ -6,6 +6,7 @@ import cors from 'cors'
 import config from '@/config/config'
 import logger from '@/config/logger'
 import ErrorMiddleware from '@/middlewares/ErrorMiddleware'
+import { setupCommentsRoute } from './routes/comments.route'
 
 class Application {
   app: express.Application
@@ -34,7 +35,7 @@ class Application {
   }
 
   router() {
-    // Route here
+    setupCommentsRoute(this.app)
   }
 
   onError(error: any) {

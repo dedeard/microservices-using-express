@@ -55,7 +55,7 @@ export const updatePost = ca(async (req, res) => {
       title: Joi.string().trim().min(3).max(200).required(),
       description: Joi.string().trim().min(3).max(500).required(),
       body: Joi.string().trim().max(1500).required(),
-      tags: Joi.array().items(Joi.string().trim().min(3).max(20).required()).allow([]).required(),
+      tags: Joi.array().items(Joi.string().trim().min(3).max(20)).required(),
       published: Joi.boolean().default(false).required(),
     }).validateAsync({ title, description, body, tags, published }, { abortEarly: false })
     title = data.title
@@ -66,7 +66,6 @@ export const updatePost = ca(async (req, res) => {
   } catch (e) {
     throw new ApiError(422, 'Failed to update post', e)
   }
-
   if (req.files?.heroImage) {
     const image = req.files.heroImage
     const data: UploadedFile = Array.isArray(image) ? image[0] : image
@@ -81,7 +80,13 @@ export const updatePost = ca(async (req, res) => {
     await post.generateHero(data.data)
   }
 
-  await post.update({ title, description, body, tags, published })
+  post.title = title
+  post.description = description
+  post.body = body
+  post.tags = tags
+  post.published = published
+  await post.save()
+
   await redisCache.del(`users:${req.auth.uid}:post:${id}`)
   await redisCache.del(`users:${req.auth.uid}:posts`)
 

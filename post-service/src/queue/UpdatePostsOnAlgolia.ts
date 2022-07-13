@@ -25,8 +25,8 @@ function transformPostToAlgoliaObject(post: IPostDocument) {
     slug: data.slug,
     description: data.description,
     body: data.body,
-    tags: data.tags,
-    heroImage: data.heroImage,
+    _tags: data.tags,
+    heroImage: data.heroImage || '',
     createdAt: data.createdAt,
     updatedAt: data.updatedAt,
   }
