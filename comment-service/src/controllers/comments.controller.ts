@@ -61,6 +61,7 @@ export const deleteComment = ca(async (req, res) => {
   const comment = await Comment.findOne({ _id: commentId, author: userId })
   if (!comment) throw new ApiError(404, 'Comment not found')
   await Promise.all([Comment.deleteMany({ parent: commentId }), comment.remove(), redisCache.del(`posts:${comment.post}:comments`)])
+  res.sendStatus(204)
 })
 
 export const createReply = ca(async (req, res) => {
