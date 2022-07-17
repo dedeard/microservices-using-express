@@ -13,7 +13,7 @@ services:
       - "27017:27017"
 
   api-getaway: 
-    container_name: nginx
+    container_name: api-getaway
     image: nginx
     ports:
       - "8080:8080"
@@ -72,3 +72,9 @@ services:
       - REDIS_PORT=6379
       - MONGODB_URL=mongodb://mongo-service:27017/micro-comments
       - AUTH_SERVICE_BASE_URL=http://auth-service:8081
+
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    ports:
+      - "8888:80"
