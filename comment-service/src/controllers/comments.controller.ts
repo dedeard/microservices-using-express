@@ -39,17 +39,17 @@ export const createComment = ca(async (req, res) => {
 
   if (!Types.ObjectId.isValid(postId)) throw new ApiError(404, 'Post not found')
 
-  let { body } = req.body
+  let { content } = req.body
   try {
     const data = await Joi.object({
-      body: Joi.string().trim().min(3).max(500).required(),
-    }).validateAsync({ body }, { abortEarly: false })
-    body = data.body
+      content: Joi.string().trim().min(3).max(500).required(),
+    }).validateAsync({ content }, { abortEarly: false })
+    content = data.content
   } catch (e) {
     throw new ApiError(422, 'Failed to create comment', e)
   }
 
-  const comment = await Comment.create({ body, author: userId, post: postId })
+  const comment = await Comment.create({ content, author: userId, post: postId })
   await redisCache.del(`posts:${postId}:comments`)
   res.json(comment)
 })
@@ -70,17 +70,17 @@ export const createReply = ca(async (req, res) => {
   const comment = await Comment.findOne({ _id: commentId, parent: null })
   if (!comment) throw new ApiError(404, 'Comment not found')
 
-  let { body } = req.body
+  let { content } = req.body
   try {
     const data = await Joi.object({
-      body: Joi.string().trim().min(3).max(500).required(),
-    }).validateAsync({ body }, { abortEarly: false })
-    body = data.body
+      content: Joi.string().trim().min(3).max(500).required(),
+    }).validateAsync({ content }, { abortEarly: false })
+    content = data.content
   } catch (e) {
     throw new ApiError(422, 'Failed to create reply', e)
   }
 
-  const reply = await Comment.create({ body, author: userId, parent: commentId, post: comment.post })
+  const reply = await Comment.create({ content, author: userId, parent: commentId, post: comment.post })
   await redisCache.del(`posts:${comment.post}:comments`)
   res.json(reply)
 })
@@ -92,25 +92,5 @@ export const deleteReply = ca(async (req, res) => {
   const reply = await Comment.findOne({ _id: replyId, author: userId, parent: { $ne: null } })
   if (!reply) throw new ApiError(404, 'Reply not found')
   await Promise.all([reply.remove(), redisCache.del(`posts:${reply.post}:comments`)])
-  res.sendStatus(204)
-})
-
-export const likeComment = ca(async (req, res) => {
-  const userId = req.auth.uid
-  const id = req.params.id
-  if (!Types.ObjectId.isValid(id)) throw new ApiError(404, 'Comment not found')
-  const comment = await Comment.findOne({ _id: id })
-  if (!comment) throw new ApiError(404, 'Comment not found')
-  await comment.like(userId)
-  res.sendStatus(204)
-})
-
-export const unlikeComment = ca(async (req, res) => {
-  const userId = req.auth.uid
-  const id = req.params.id
-  if (!Types.ObjectId.isValid(id)) throw new ApiError(404, 'Comment not found')
-  const comment = await Comment.findOne({ _id: id })
-  if (!comment) throw new ApiError(404, 'Comment not found')
-  await comment.unlike(userId)
   res.sendStatus(204)
 })

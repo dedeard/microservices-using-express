@@ -11,13 +11,15 @@ const config = {
   mongodbUrl: process.env.MONGODB_URL || 'mongodb://localhost:27017/micro-comments',
   logging: process.env.LOGGING === 'true',
 
-  jwtSecret: String(process.env.JWT_SECRET),
+  jwtSecret: String(process.env.JWT_SECRET || 'access-secret'),
 
   redis: {
-    host: String(process.env.REDIS_HOST),
-    port: Number(process.env.REDIS_PORT),
-    pass: String(process.env.REDIS_PASS),
+    host: String(process.env.REDIS_HOST || 'localhost'),
+    port: Number(process.env.REDIS_PORT || 6379),
+    pass: String(process.env.REDIS_PASS   || ''),
   },
+
+  cacheTtl: Number(process.env.CACHE_TTL || 30), // seconds
 
   authServiceBaseUrl: String(process.env.AUTH_SERVICE_BASE_URL || 'http://localhost:8081'),
 }

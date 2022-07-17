@@ -14,7 +14,7 @@ class ApiError extends Error {
     if (e instanceof Joi.ValidationError) {
       const errors: { [key: string]: string } = {}
       for (let i in e.details) {
-        errors[e.details[i].context?.key as string] = e.details[i].message
+        errors[e.details[i].path[0] as string] = e.details[i].message
       }
       if (errors) this.errors = errors
     } else {
