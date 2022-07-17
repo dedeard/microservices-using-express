@@ -4,7 +4,7 @@ This is a simple authentication developed using node with typescript
 
 ## Requirements
 
-[Node.js](https://nodejs.org/en/), [MongoDB](https://www.mongodb.com/try/download)
+[Node.js](https://nodejs.org/en/), [MongoDB](https://www.mongodb.com/try/download), [Redis](https://redis.io/download)
 
 ### Getting Started
 
