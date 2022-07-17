@@ -13,6 +13,13 @@ export default function AppNavbar() {
           <Link className="nav-link" to="/">
             Home
           </Link>
+          <a
+            className="nav-link"
+            target="_blank"
+            href="https://github.com/dedeardiansya/microservices-using-express"
+          >
+            Source code
+          </a>
           {auth.state.user ? (
             <>
               <Link className="nav-link" to={'/@' + auth.state.user.username}>
