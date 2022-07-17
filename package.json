@@ -1,0 +1,27 @@
+{
+  "name": "micro",
+  "version": "1.0.0",
+  "description": "This is simple microservice app developed using node with typescript.",
+  "main": "index.js",
+  "scripts": {
+    "start": "docker-compose up --build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dedeardiansya/simple-microservices.git"
+  },
+  "keywords": [
+    "nodejs",
+    "microservices",
+    "typescript",
+    "mongodb",
+    "redis",
+    "react"
+  ],
+  "author": "dede ariansya",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dedeardiansya/simple-microservices/issues"
+  },
+  "homepage": "https://github.com/dedeardiansya/simple-microservices#readme"
+}
