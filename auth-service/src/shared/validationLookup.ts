@@ -1,23 +1,27 @@
 import Joi from 'joi'
 import User, { IUserDocument } from '@/models/user.model'
 
-export const uniqueEmailLookup =
+export const uniqueUsernameLookup =
   (exludeId?: string): Joi.ExternalValidationFunction =>
   async (val) => {
-    const exists = await User.isEmailTaken(val, exludeId)
+    const exists = await User.isUsernameTaken(val, exludeId)
     if (exists) {
-      throw new Joi.ValidationError('"Email" already exists.', [{ message: '"Email" already exists.', context: { key: 'email' } }], val)
+      throw new Joi.ValidationError(
+        '"Username" already exists.',
+        [{ message: '"Username" already exists.', context: { key: 'username' }, path: ['username'] }],
+        val,
+      )
     }
   }
 
-export const registeredEmailLookup =
+export const registeredUsernameLookup =
   (exludeId?: string): Joi.ExternalValidationFunction =>
   async (val) => {
-    const exists = await User.isEmailTaken(val, exludeId)
+    const exists = await User.isUsernameTaken(val, exludeId)
     if (!exists) {
       throw new Joi.ValidationError(
-        '"Email" is not registered.',
-        [{ message: '"Email" is not registered.', context: { key: 'email' } }],
+        '"Username" is not registered.',
+        [{ message: '"Username" is not registered.', context: { key: 'username' }, path: ['username'] }],
         val,
       )
     }
@@ -28,6 +32,10 @@ export const passwordMatchLookup =
   async (val) => {
     const match = await user.comparePassword(val)
     if (!match) {
-      throw new Joi.ValidationError('"Password" is not valid.', [{ message: '"Password" is not valid', context: { key: 'password' } }], val)
+      throw new Joi.ValidationError(
+        '"Password" is not valid.',
+        [{ message: '"Password" is not valid', context: { key: 'password' }, path: ['password'] }],
+        val,
+      )
     }
   }

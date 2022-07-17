@@ -13,39 +13,24 @@ const config = {
 
   jwt: {
     access: {
-      secret: String(process.env.JWT_ACCESS_SECRET),
-      expMinutes: Number(process.env.JWT_ACCESS_EXP_MINUTES),
+      secret: String(process.env.JWT_ACCESS_SECRET || 'access-secret'),
+      expMinutes: Number(process.env.JWT_ACCESS_EXP_MINUTES || 30),
     },
     refresh: {
-      secret: String(process.env.JWT_REFRESH_SECRET),
-      expDays: Number(process.env.JWT_REFRESH_EXP_DAYS),
+      secret: String(process.env.JWT_REFRESH_SECRET || 'refresh-secret'),
+      expDays: Number(process.env.JWT_REFRESH_EXP_DAYS || 30),
     },
   },
 
-  resetPasswordExpMinutes: Number(process.env.RESET_PASSWORD_EXP_MINUTES),
+  resetPasswordExpMinutes: Number(process.env.RESET_PASSWORD_EXP_MINUTES || 10),
 
   redis: {
-    host: String(process.env.REDIS_HOST),
-    port: Number(process.env.REDIS_PORT),
-    pass: String(process.env.REDIS_PASS),
+    host: String(process.env.REDIS_HOST || 'localhost'),
+    port: Number(process.env.REDIS_PORT || 6379),
+    pass: String(process.env.REDIS_PASS || ''),
   },
 
-  bucketName: process.env.GC_BUCKET_NAME,
-  googleCLoudKey: {
-    project_id: process.env.GC_PROJECT_ID,
-    private_key: String(process.env.GC_PRIVATE_KEY).replace(/\\n/g, '\n'),
-    client_email: process.env.GC_CLIENT_EMAIL,
-  },
-
-  smtp: {
-    host: String(process.env.SMTP_HOST),
-    port: Number(process.env.SMTP_PORT),
-    from: process.env.SMTP_FROM,
-    auth: {
-      user: String(process.env.SMTP_USER),
-      pass: String(process.env.SMTP_PASS),
-    },
-  },
+  cacheTtl: Number(process.env.CACHE_TTL || 30), // seconds
 }
 
 export default config

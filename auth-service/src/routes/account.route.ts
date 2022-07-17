@@ -6,7 +6,6 @@ export const route = Router()
 
 route.get('/profile', auth(), controller.getProfile)
 route.put('/profile', auth(), controller.updateProfile)
-route.put('/avatar', auth(), controller.updateAvatar)
 
 export const setupAccountRoute = (app: Application) => {
   app.use('/account', route)

@@ -3,7 +3,6 @@ import express from 'express'
 import helmet from 'helmet'
 import morgan from 'morgan'
 import cors from 'cors'
-import fileUpload from 'express-fileupload'
 import config from '@/config/config'
 import logger from '@/config/logger'
 import ErrorMiddleware from '@/middlewares/ErrorMiddleware'
@@ -35,7 +34,6 @@ class Application {
     this.app.use(helmet())
     this.app.use(express.json())
     this.app.use(express.urlencoded({ extended: true }))
-    this.app.use(fileUpload())
   }
 
   router() {

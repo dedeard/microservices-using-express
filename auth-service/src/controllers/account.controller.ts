@@ -1,8 +1,6 @@
 import Joi from 'joi'
-import { UploadedFile } from 'express-fileupload'
-import { fromBuffer } from 'file-type'
 import ca from '@/shared/catchAsync'
-import { passwordMatchLookup } from '@/shared/validationLookup'
+import { passwordMatchLookup, uniqueUsernameLookup } from '@/shared/validationLookup'
 import ApiError from '@/shared/ApiError'
 import User, { IUserDocument } from '@/models/user.model'
 import redisCache from '@/config/cache'
@@ -22,48 +20,35 @@ export const getProfile = ca(async (req, res) => {
 })
 
 export const updateProfile = ca(async (req, res) => {
-  const user = await getUser(req.auth?.uid)
+  const user = await getUser(req.auth.uid)
   try {
-    const { name, website, bio, password, newPassword } = req.body
+    const { name, bio, username, password, newPassword } = req.body
     req.body = await Joi.object({
-      name: Joi.string().trim().min(3).max(30),
-      website: Joi.string().trim().uri().allow(''),
-      bio: Joi.string().trim().max(300),
-      newPassword: Joi.string().trim().min(3).max(30),
+      name: Joi.string().trim().min(3).max(30).required(),
+      bio: Joi.string().trim().max(300).allow('').required(),
+      username: Joi.string()
+        .trim()
+        .lowercase()
+        .min(6)
+        .max(30)
+        .regex(/^(?![_.])(?!.*[_]{2})[a-z0-9_]+(?<![_])$/)
+        .message('Username must be start with a letter, and contain only letters, numbers, and underscores.')
+        .required()
+        .external(uniqueUsernameLookup(req.auth.uid)),
+      newPassword: Joi.string().trim().min(3).max(30).allow(''),
       password: Joi.when('newPassword', {
         then: Joi.string().trim().required().external(passwordMatchLookup(user)),
-        otherwise: Joi.when('email', {
-          then: Joi.string().trim().required().external(passwordMatchLookup(user)),
-        }),
       }),
-    }).validateAsync({ name, website, bio, password, newPassword }, { abortEarly: false })
+    }).validateAsync({ name, bio, password, username, newPassword }, { abortEarly: false })
   } catch (e) {
     throw new ApiError(422, 'Failed to update profile.', e)
   }
 
-  if (req.body.name) user.name = req.body.name
-  if (typeof req.body.website !== 'undefined') user.website = req.body.website || null
-  if (typeof req.body.bio !== 'undefined') user.bio = req.body.bio || null
+  user.name = req.body.name
+  user.username = req.body.username
+  user.bio = req.body.bio || ''
   if (req.body.newPassword) user.password = req.body.newPassword
   await user.save()
-
-  const key = `user:${req.auth?.uid}`
-  await redisCache.del(key)
-
-  res.json(user)
-})
-
-export const updateAvatar = ca(async (req, res) => {
-  const user = await getUser(req.auth?.uid)
-  const image = req.files?.image
-  const data: UploadedFile | undefined = Array.isArray(image) ? image[0] : image
-  if (!data) throw new ApiError(422, 'Image is required')
-
-  const mime = await fromBuffer(data.data)
-  if (!['jpg', 'png', 'gif'].includes(mime?.ext || '')) {
-    throw new ApiError(422, 'Image format must be [jpg, png, gif]')
-  }
-  await user.generateAvatar(data.data)
 
   const key = `user:${req.auth?.uid}`
   await redisCache.del(key)

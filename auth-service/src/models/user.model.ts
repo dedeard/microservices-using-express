@@ -1,38 +1,28 @@
-import { Schema, model, Document, PaginateModel } from 'mongoose'
+import { Schema, model, Document, Model } from 'mongoose'
 import bcrypt from 'bcrypt'
-import sharp from 'sharp'
-import moment from 'moment'
-import paginate from 'mongoose-paginate-v2'
-import storageService from '@/services/storage.service'
 
 export interface IUser {
   name: string
-  email: string
+  username: string
   password: string
-  avatar?: string
-  website?: string
   bio?: string
   lastLogin?: Date
 }
 
 export interface IUserDocument extends IUser, Document {
   comparePassword: (password: string) => Promise<boolean>
-  generateAvatar: (imgBuff: Buffer) => Promise<string>
-  deleteAvatar: () => Promise<void>
 }
 
-export interface IUserModel extends PaginateModel<IUserDocument> {
-  isEmailTaken: (email: string, excludeId?: string) => Promise<boolean>
+export interface IUserModel extends Model<IUserDocument> {
+  isUsernameTaken: (username: string, excludeId?: string) => Promise<boolean>
 }
 
 export const UserSchema: Schema<IUserDocument> = new Schema(
   {
     name: { type: String, required: true, trim: true, minlength: 3, maxlength: 30 },
-    email: { type: String, required: true, unique: true, immutable: true, trim: true },
+    username: { type: String, required: true, unique: true, trim: true },
     password: { type: String, required: true },
-    avatar: { type: String },
-    website: { type: String, trim: true },
-    bio: { type: String, maxlength: 300 },
+    bio: { type: String, maxlength: 300, default: '' },
     lastLogin: { type: Date },
   },
   {
@@ -48,8 +38,6 @@ export const UserSchema: Schema<IUserDocument> = new Schema(
     },
   },
 )
-
-UserSchema.plugin(paginate)
 
 // Hash password before data is seved.
 UserSchema.pre('save', function (next) {
@@ -71,34 +59,10 @@ UserSchema.methods.comparePassword = function (password: string): Promise<boolea
   return bcrypt.compare(password, this.password)
 }
 
-UserSchema.methods.generateAvatar = async function (imgBuff: Buffer): Promise<string> {
-  const name = 'avatar/' + this._id + '-' + moment().unix() + '.jpg'
-  await sharp(imgBuff)
-    .resize({ width: 180, height: 180 })
-    .toFormat('jpeg')
-    .toBuffer()
-    .then((buffer) => {
-      return storageService.save(name, buffer)
-    })
-  const oldAvatar = this.avatar
-  this.avatar = storageService.createUrl(name)
-  await this.save()
-  if (oldAvatar) {
-    await storageService.remove(storageService.normalizeUrl(oldAvatar))
-  }
-  return this.avatar
-}
-
-UserSchema.methods.deleteAvatar = async function (): Promise<void> {
-  await storageService.remove(storageService.normalizeUrl(this.avatar))
-  this.avatar = undefined
-  await this.save()
-}
-
 // Statics
 //
-UserSchema.statics.isEmailTaken = async function (email: string, excludeId: string): Promise<boolean> {
-  const count = await this.countDocuments({ email, _id: { $ne: excludeId } })
+UserSchema.statics.isUsernameTaken = async function (username: string, excludeId: string): Promise<boolean> {
+  const count = await this.countDocuments({ username, _id: { $ne: excludeId } })
   return count > 0
 }
 
